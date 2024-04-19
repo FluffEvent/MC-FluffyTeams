@@ -1,4 +1,4 @@
-package org.redcraft.redcraftplugintemplate.runnables.commands;
+package fr.fluffevent.fluffyteams.runnables.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

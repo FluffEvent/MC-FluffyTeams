@@ -1,12 +1,12 @@
-package org.redcraft.redcraftplugintemplate.database;
+package fr.fluffevent.fluffyteams.database;
 
 import com.dieselpoint.norm.Database;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.redcraft.redcraftplugintemplate.Config;
-import org.redcraft.redcraftplugintemplate.RedCraftPluginTemplate;
-import org.redcraft.redcraftplugintemplate.models.database.PlayerPreferences;
+import fr.fluffevent.fluffyteams.Config;
+import fr.fluffevent.fluffyteams.FluffyTeams;
+import fr.fluffevent.fluffyteams.models.database.PlayerPreferences;
 
 public class DatabaseManager {
 
@@ -23,10 +23,10 @@ public class DatabaseManager {
     classes.add(PlayerPreferences.class);
     createStructure(classes);
 
-    RedCraftPluginTemplate
-      .getInstance()
-      .getLogger()
-      .info("Connected to database!");
+    FluffyTeams
+        .getInstance()
+        .getLogger()
+        .info("Connected to database!");
   }
 
   public static void createStructure(List<Class<?>> classes) {

@@ -1,9 +1,9 @@
-package org.redcraft.redcraftplugintemplate.caching;
+package fr.fluffevent.fluffyteams.caching;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import java.util.List;
-import org.redcraft.redcraftplugintemplate.Config;
+import fr.fluffevent.fluffyteams.Config;
 
 public class RedisCache {
 
@@ -70,8 +70,8 @@ public class RedisCache {
 
     List<String> keysToDelete = redisConnection.sync().keys(getKeyName("*"));
     redisConnection
-      .sync()
-      .del(keysToDelete.toArray(new String[keysToDelete.size()]));
+        .sync()
+        .del(keysToDelete.toArray(new String[keysToDelete.size()]));
     return true;
   }
 

@@ -1,4 +1,4 @@
-package org.redcraft.redcraftplugintemplate.models;
+package fr.fluffevent.fluffyteams.models;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

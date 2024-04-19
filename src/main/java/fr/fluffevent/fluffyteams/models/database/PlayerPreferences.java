@@ -1,4 +1,4 @@
-package org.redcraft.redcraftplugintemplate.models.database;
+package fr.fluffevent.fluffyteams.models.database;
 
 import java.util.UUID;
 import javax.persistence.Column;

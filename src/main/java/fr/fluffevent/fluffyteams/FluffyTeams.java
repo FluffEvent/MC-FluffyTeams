@@ -1,4 +1,4 @@
-package org.redcraft.redcraftplugintemplate;
+package fr.fluffevent.fluffyteams;
 
 import java.io.File;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -6,27 +6,26 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.redcraft.redcraftplugintemplate.database.DatabaseManager;
-import org.redcraft.redcraftplugintemplate.runnables.commands.TestCommand;
+import fr.fluffevent.fluffyteams.database.DatabaseManager;
+import fr.fluffevent.fluffyteams.runnables.commands.TestCommand;
 
-public class RedCraftPluginTemplate extends JavaPlugin {
+public class FluffyTeams extends JavaPlugin {
 
-  public RedCraftPluginTemplate() {
+  public FluffyTeams() {
     super();
   }
 
-  protected RedCraftPluginTemplate(
-    JavaPluginLoader loader,
-    PluginDescriptionFile description,
-    File dataFolder,
-    File file
-  ) {
+  protected FluffyTeams(
+      JavaPluginLoader loader,
+      PluginDescriptionFile description,
+      File dataFolder,
+      File file) {
     super(loader, description, dataFolder, file);
   }
 
-  private static RedCraftPluginTemplate instance;
+  private static FluffyTeams instance;
 
-  public static RedCraftPluginTemplate getInstance() {
+  public static FluffyTeams getInstance() {
     return instance;
   }
 

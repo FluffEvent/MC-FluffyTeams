@@ -1,9 +1,9 @@
-package org.redcraft.redcraftplugintemplate.caching;
+package fr.fluffevent.fluffyteams.caching;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.redcraft.redcraftplugintemplate.Config;
-import org.redcraft.redcraftplugintemplate.models.caching.CacheCategory;
+import fr.fluffevent.fluffyteams.Config;
+import fr.fluffevent.fluffyteams.models.caching.CacheCategory;
 
 public class CacheManager {
 
@@ -63,18 +63,16 @@ public class CacheManager {
   }
 
   public static Object get(
-    CacheCategory category,
-    String key,
-    Class<?> classType
-  ) {
+      CacheCategory category,
+      String key,
+      Class<?> classType) {
     return get(formatCategoryKey(category, key), classType);
   }
 
   public static boolean put(
-    CacheCategory category,
-    String key,
-    Object element
-  ) {
+      CacheCategory category,
+      String key,
+      Object element) {
     return put(formatCategoryKey(category, key), element);
   }
 

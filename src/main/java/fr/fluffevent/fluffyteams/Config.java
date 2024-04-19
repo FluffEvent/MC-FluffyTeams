@@ -1,11 +1,11 @@
-package org.redcraft.redcraftplugintemplate;
+package fr.fluffevent.fluffyteams;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Config {
 
-  public static String databaseUri = "jdbc:sqlite:%plugin_config_path%/plugins/RedCraftPluginTemplate/database.db";
+  public static String databaseUri = "jdbc:sqlite:%plugin_config_path%/plugins/FluffyTeams/database.db";
   public static String databaseUsername = "";
   public static String databasePassword = "";
 

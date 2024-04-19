@@ -1,8 +1,8 @@
-package org.redcraft.redcraftplugintemplate.models.database;
+package fr.fluffevent.fluffyteams.models.database;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.redcraft.redcraftplugintemplate.database.DatabaseManager;
+import fr.fluffevent.fluffyteams.database.DatabaseManager;
 
 public class DatabaseModel {
 

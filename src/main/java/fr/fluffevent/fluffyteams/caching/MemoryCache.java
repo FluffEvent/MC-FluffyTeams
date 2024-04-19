@@ -1,4 +1,4 @@
-package org.redcraft.redcraftplugintemplate.caching;
+package fr.fluffevent.fluffyteams.caching;
 
 import java.util.HashMap;
 
