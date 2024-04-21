@@ -9,10 +9,6 @@ public class Config {
   public static String databaseUsername = "";
   public static String databasePassword = "";
 
-  public static boolean redisEnabled = false;
-  public static String redisUri = "";
-  public static String redisKeyPrefix = "rct"; // Change this to the prefix that will be used by the plugin
-
   public static void readConfig(JavaPlugin plugin) {
     plugin.saveDefaultConfig();
 
@@ -21,9 +17,5 @@ public class Config {
     databaseUri = config.getString("database-uri");
     databaseUsername = config.getString("database-username");
     databasePassword = config.getString("database-password");
-
-    redisEnabled = config.getBoolean("redis-enabled");
-    redisUri = config.getString("redis-uri");
-    redisKeyPrefix = config.getString("redis-key-prefix");
   }
 }

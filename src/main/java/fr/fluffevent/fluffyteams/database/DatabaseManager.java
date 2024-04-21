@@ -6,7 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import fr.fluffevent.fluffyteams.Config;
 import fr.fluffevent.fluffyteams.FluffyTeams;
-import fr.fluffevent.fluffyteams.models.database.PlayerPreferences;
+import fr.fluffevent.fluffyteams.models.database.Spawn;
+import fr.fluffevent.fluffyteams.models.database.Team;
 
 public class DatabaseManager {
 
@@ -20,7 +21,8 @@ public class DatabaseManager {
     database.setPassword(Config.databasePassword);
 
     List<Class<?>> classes = new ArrayList<Class<?>>();
-    classes.add(PlayerPreferences.class);
+    classes.add(Team.class);
+    classes.add(Spawn.class);
     createStructure(classes);
 
     FluffyTeams

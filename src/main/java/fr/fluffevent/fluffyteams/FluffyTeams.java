@@ -7,7 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
 import fr.fluffevent.fluffyteams.database.DatabaseManager;
-import fr.fluffevent.fluffyteams.runnables.commands.TestCommand;
+import fr.fluffevent.fluffyteams.runnables.commands.FluffyTeamsCommand;
 
 public class FluffyTeams extends JavaPlugin {
 
@@ -37,16 +37,13 @@ public class FluffyTeams extends JavaPlugin {
     Config.readConfig(this);
     DatabaseManager.connect();
 
-    // Schedulers
-    BukkitScheduler scheduler = getServer().getScheduler();
-    scheduler.cancelTasks(this); // Remove this line once your schedulers are ready
-
     // Game listeners
-    PluginManager pluginManager = this.getServer().getPluginManager();
-    pluginManager.disablePlugin(this); // Remove this once your listeners are ready
+    // PluginManager pluginManager = this.getServer().getPluginManager();
+    // pluginManager.disablePlugin(this); // Remove this once your listeners are
+    // ready
 
     // Commands
-    this.getCommand("test").setExecutor(new TestCommand());
+    this.getCommand("fluffyteams").setExecutor(new FluffyTeamsCommand());
   }
 
   @Override
