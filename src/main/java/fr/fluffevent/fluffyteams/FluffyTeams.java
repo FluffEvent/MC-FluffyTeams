@@ -2,10 +2,8 @@ package fr.fluffevent.fluffyteams;
 
 import java.io.File;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import org.bukkit.scheduler.BukkitScheduler;
 import fr.fluffevent.fluffyteams.database.DatabaseManager;
 import fr.fluffevent.fluffyteams.runnables.commands.FluffyTeamsCommand;
 

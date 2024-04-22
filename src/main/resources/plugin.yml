@@ -6,7 +6,7 @@ author: FluffEvent
 authors: [lululombard]
 website: fluffevent.fr
 commands:
-  test:
+  fluffyteams:
     description: Fluffy teams commands
     usage: /fluffyteams
     permission: fluffyteams.admin

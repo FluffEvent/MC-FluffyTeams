@@ -1,6 +1,7 @@
 package fr.fluffevent.fluffyteams.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,6 +25,41 @@ public class TeamController {
         db = DatabaseManager.getDatabase();
     }
 
+    public Team getTeam(String name) {
+        List<Team> teams = db.where("name = ?", name).results(Team.class);
+        if (teams.isEmpty()) {
+            return null;
+        }
+        return teams.get(0);
+    }
+
+    public Member getMember(String teamName, Player player) {
+        Team team = getTeam(teamName);
+        if (team == null) {
+            throw new IllegalArgumentException("Team " + teamName + " not found");
+        }
+
+        List<Member> members = db.where("team_id = ? AND player_uuid = ?", team.id, player.getUniqueId())
+                .results(Member.class);
+        if (members.isEmpty()) {
+            return null;
+        }
+        return members.get(0);
+    }
+
+    public Spawn getSpawn(String teamName) {
+        Team team = getTeam(teamName);
+        if (team == null) {
+            throw new IllegalArgumentException("Team " + teamName + " not found");
+        }
+
+        List<Spawn> spawns = db.where("team_id = ?", team.id).results(Spawn.class);
+        if (spawns.isEmpty()) {
+            return null;
+        }
+        return spawns.get(0);
+    }
+
     public void create(String name, String displayName) {
         Team team = new Team();
         team.name = name;
@@ -32,26 +68,38 @@ public class TeamController {
         db.insert(team);
     }
 
-    public void delete(String name) {
-        Team team = db.where("name = ?", name).results(Team.class).get(0);
+    public void delete(String teamName) {
+        Team team = getTeam(teamName);
+        if (team == null) {
+            throw new IllegalArgumentException("Team " + teamName + " not found");
+        }
         db.delete(team);
     }
 
     public void addMember(String teamName, Player player) {
-        Team team = db.where("name = ?", teamName).results(Team.class).get(0);
+        Team team = getTeam(teamName);
+        if (team == null) {
+            throw new IllegalArgumentException("Team " + teamName + " not found");
+        }
 
         Member member = new Member();
         member.teamId = team.id;
-        member.playerUuid = player.getUniqueId();
+        member.playerUuid = player.getUniqueId().toString();
 
         db.insert(member);
     }
 
     public void removeMember(String teamName, Player player) {
-        Team team = db.where("name = ?", teamName).results(Team.class).get(0);
+        Team team = getTeam(teamName);
+        if (team == null) {
+            throw new IllegalArgumentException("Team " + teamName + " not found");
+        }
 
-        Member member = db.where("team_id = ? AND player_uuid = ?", team.id, player.getUniqueId()).results(Member.class)
-                .get(0);
+        Member member = getMember(teamName, player);
+
+        if (member == null) {
+            throw new IllegalArgumentException("Player " + player.getName() + " not found in team " + teamName);
+        }
 
         db.delete(member);
     }
@@ -61,38 +109,47 @@ public class TeamController {
     }
 
     public List<OfflinePlayer> listMembers(String teamName) {
-        Team team = db.where("name = ?", teamName).results(Team.class).get(0);
+        Team team = getTeam(teamName);
         List<Member> members = db.where("team_id = ?", team.id).results(Member.class);
 
-        return members.stream().map(m -> Bukkit.getOfflinePlayer(m.playerUuid)).toList();
+        return members.stream().map(m -> Bukkit.getOfflinePlayer(UUID.fromString(m.playerUuid))).toList();
     }
 
     public void spawn(String teamName) {
         if (teamName.equals("*")) {
             this.list().forEach(t -> spawn(t.name));
-        } else {
-            Team team = db.where("name = ?", teamName).results(Team.class).get(0);
-            Spawn spawn = db.where("team_id = ?", team.id).results(Spawn.class).get(0);
-
-            if (spawn == null) {
-                throw new IllegalArgumentException("No spawn set for team " + teamName);
-            }
-
-            World world = Bukkit.getWorld(spawn.world);
-            Location location = new Location(world, spawn.x, spawn.y, spawn.z, spawn.yaw, spawn.pitch);
-
-            listMembers(teamName).forEach(p -> {
-                if (p.isOnline()) {
-                    p.getPlayer().teleport(location);
-                }
-            });
+            return;
         }
+
+        Spawn spawn = getSpawn(teamName);
+
+        if (spawn == null) {
+            throw new IllegalArgumentException("No spawn set for team " + teamName);
+        }
+
+        World world = Bukkit.getWorld(spawn.world);
+        Location location = new Location(world, spawn.x, spawn.y, spawn.z, spawn.yaw, spawn.pitch);
+
+        listMembers(teamName).forEach(p -> {
+            if (p.isOnline()) {
+                p.getPlayer().teleport(location);
+            }
+        });
     }
 
     public void setSpawn(String teamName, Location location) {
-        Team team = db.where("name = ?", teamName).results(Team.class).get(0);
+        if (teamName.equals("*")) {
+            this.list().forEach(t -> setSpawn(t.name, location));
+            return;
+        }
 
-        Spawn spawn = db.where("team_id = ?", team.id).results(Spawn.class).get(0);
+        Team team = getTeam(teamName);
+
+        if (team == null) {
+            throw new IllegalArgumentException("Team " + teamName + " not found");
+        }
+
+        Spawn spawn = getSpawn(teamName);
 
         if (spawn == null) {
             spawn = new Spawn();
@@ -100,11 +157,11 @@ public class TeamController {
         }
 
         spawn.world = location.getWorld().getName();
-        spawn.x = (long) location.getX();
-        spawn.y = (long) location.getY();
-        spawn.z = (long) location.getZ();
-        spawn.yaw = (long) location.getYaw();
-        spawn.pitch = (long) location.getPitch();
+        spawn.x = location.getX();
+        spawn.y = location.getY();
+        spawn.z = location.getZ();
+        spawn.yaw = location.getYaw();
+        spawn.pitch = location.getPitch();
 
         if (spawn.id == 0) {
             db.insert(spawn);

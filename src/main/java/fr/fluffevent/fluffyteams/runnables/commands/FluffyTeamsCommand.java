@@ -1,7 +1,6 @@
 package fr.fluffevent.fluffyteams.runnables.commands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -9,12 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.dieselpoint.norm.Database;
-
 import fr.fluffevent.fluffyteams.controllers.TeamController;
-import fr.fluffevent.fluffyteams.database.DatabaseManager;
-import fr.fluffevent.fluffyteams.models.database.Spawn;
-import fr.fluffevent.fluffyteams.models.database.Team;
 
 public class FluffyTeamsCommand implements CommandExecutor {
 
@@ -36,72 +30,76 @@ public class FluffyTeamsCommand implements CommandExecutor {
       return true;
     }
 
-    switch (args[0]) {
-      case "help":
-        help(sender);
-        break;
-      case "create":
-        if (args.length < 3) {
-          sender.sendMessage("§cUsage: /fluffyteams create <name> <display_name>");
-          return true;
-        }
-        create(sender, args[1], args[2]);
-        break;
-      case "delete":
-        if (args.length < 2) {
-          sender.sendMessage("§cUsage: /fluffyteams delete <name>");
-          return true;
-        }
-        delete(sender, args[1]);
-        break;
-      case "add":
-        if (args.length < 3) {
-          sender.sendMessage("§cUsage: /fluffyteams add <team> <player>");
-          return true;
-        }
-        Player player = Bukkit.getPlayer(args[2]);
-        if (player == null) {
-          sender.sendMessage("§cPlayer not found.");
-          return true;
-        }
-        add(sender, args[1], player);
-        break;
-      case "remove":
-        if (args.length < 3) {
-          sender.sendMessage("§cUsage: /fluffyteams remove <team> <player>");
-          return true;
-        }
-        Player playerToRemove = Bukkit.getPlayer(args[2]);
-        if (playerToRemove == null) {
-          sender.sendMessage("§cPlayer not found.");
-          return true;
-        }
-        remove(sender, args[1], playerToRemove);
-        break;
-      case "list":
-        if (args.length == 1) {
-          list(sender);
-        } else {
-          list(sender, args[1]);
-        }
-        break;
-      case "spawn":
-        if (args.length < 2) {
-          sender.sendMessage("§cUsage: /fluffyteams spawn <team>");
-          return true;
-        }
-        spawn(sender, args[1]);
-        break;
-      case "setspawn":
-        if (args.length < 2) {
-          sender.sendMessage("§cUsage: /fluffyteams setspawn <team> [world] [x] [y] [z] [yaw] [pitch]");
-          return true;
-        }
-        setSpawn(sender, args);
-        break;
-      default:
-        help(sender);
-        break;
+    try {
+      switch (args[0]) {
+        case "help":
+          help(sender);
+          break;
+        case "create":
+          if (args.length < 3) {
+            sender.sendMessage("§cUsage: /fluffyteams create <name> <display_name>");
+            return true;
+          }
+          create(sender, args[1], args[2]);
+          break;
+        case "delete":
+          if (args.length < 2) {
+            sender.sendMessage("§cUsage: /fluffyteams delete <name>");
+            return true;
+          }
+          delete(sender, args[1]);
+          break;
+        case "add":
+          if (args.length < 3) {
+            sender.sendMessage("§cUsage: /fluffyteams add <team> <player>");
+            return true;
+          }
+          Player player = Bukkit.getPlayer(args[2]);
+          if (player == null) {
+            sender.sendMessage("§cPlayer not found.");
+            return true;
+          }
+          add(sender, args[1], player);
+          break;
+        case "remove":
+          if (args.length < 3) {
+            sender.sendMessage("§cUsage: /fluffyteams remove <team> <player>");
+            return true;
+          }
+          Player playerToRemove = Bukkit.getPlayer(args[2]);
+          if (playerToRemove == null) {
+            sender.sendMessage("§cPlayer not found.");
+            return true;
+          }
+          remove(sender, args[1], playerToRemove);
+          break;
+        case "list":
+          if (args.length == 1) {
+            list(sender);
+          } else {
+            list(sender, args[1]);
+          }
+          break;
+        case "spawn":
+          if (args.length < 2) {
+            sender.sendMessage("§cUsage: /fluffyteams spawn <team>");
+            return true;
+          }
+          spawn(sender, args[1]);
+          break;
+        case "setspawn":
+          if (args.length < 2) {
+            sender.sendMessage("§cUsage: /fluffyteams setspawn <team> [world] [x] [y] [z] [yaw] [pitch]");
+            return true;
+          }
+          setSpawn(sender, args);
+          break;
+        default:
+          help(sender);
+          break;
+      }
+    } catch (IllegalArgumentException e) {
+      sender.sendMessage("§4Error: " + e.getMessage());
     }
 
     return true;
@@ -117,7 +115,7 @@ public class FluffyTeamsCommand implements CommandExecutor {
     sender.sendMessage("§e/fluffyteams list <team> §7- §fList all members of a team");
     sender.sendMessage("§e/fluffyteams spawn <team> §7- §fTeleport team to their spawn (* for all teams)");
     sender.sendMessage(
-        "§e/fluffyteams setspawn <team> [world] [x] [y] [z] [yaw] [pitch] §7- §fSet a team spawn for the current world");
+        "§e/fluffyteams setspawn <team> [world] [x] [y] [z] [yaw] [pitch] §7- §fSet a team spawn for the current world (* for all teams)");
   }
 
   private void create(CommandSender sender, String name, String displayName) {
