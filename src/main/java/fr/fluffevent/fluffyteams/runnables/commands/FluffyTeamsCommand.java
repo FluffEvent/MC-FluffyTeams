@@ -62,16 +62,16 @@ public class FluffyTeamsCommand implements CommandExecutor {
           add(sender, args[1], player);
           break;
         case "remove":
-          if (args.length < 3) {
-            sender.sendMessage("§cUsage: /fluffyteams remove <team> <player>");
+          if (args.length < 2) {
+            sender.sendMessage("§cUsage: /fluffyteams remove <player>");
             return true;
           }
-          Player playerToRemove = Bukkit.getPlayer(args[2]);
+          Player playerToRemove = Bukkit.getPlayer(args[1]);
           if (playerToRemove == null) {
             sender.sendMessage("§cPlayer not found.");
             return true;
           }
-          remove(sender, args[1], playerToRemove);
+          remove(sender, playerToRemove);
           break;
         case "list":
           if (args.length == 1) {
@@ -110,7 +110,7 @@ public class FluffyTeamsCommand implements CommandExecutor {
     sender.sendMessage("§e/fluffyteams create <name> <display_name> §7- §fCreate a team");
     sender.sendMessage("§e/fluffyteams delete <name> §7- §fDelete a team");
     sender.sendMessage("§e/fluffyteams add <team> <player> §7- §fAdd a player to a team");
-    sender.sendMessage("§e/fluffyteams remove <team> <player> §7- §fRemove a player from a team");
+    sender.sendMessage("§e/fluffyteams remove <player> §7- §fRemove a player from their team");
     sender.sendMessage("§e/fluffyteams list §7- §fList all teams");
     sender.sendMessage("§e/fluffyteams list <team> §7- §fList all members of a team");
     sender.sendMessage("§e/fluffyteams spawn <team> §7- §fTeleport team to their spawn (* for all teams)");
@@ -133,14 +133,14 @@ public class FluffyTeamsCommand implements CommandExecutor {
     sender.sendMessage("§aPlayer added to team!");
   }
 
-  private void remove(CommandSender sender, String teamName, Player player) {
-    teamController.removeMember(teamName, player);
+  private void remove(CommandSender sender, Player player) {
+    teamController.removeMember(player);
     sender.sendMessage("§aPlayer removed from team!");
   }
 
   private void list(CommandSender sender) {
     sender.sendMessage("§eTeams:");
-    teamController.list().forEach(t -> sender.sendMessage("§f- " + t.displayName));
+    teamController.list().forEach(t -> sender.sendMessage("§f- " + t.name + " §r§f(" + t.displayName + "§r§f)"));
   }
 
   private void list(CommandSender sender, String teamName) {

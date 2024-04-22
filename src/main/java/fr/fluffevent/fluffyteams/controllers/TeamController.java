@@ -7,11 +7,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.dieselpoint.norm.Database;
 
+import fr.fluffevent.fluffyteams.Config;
 import fr.fluffevent.fluffyteams.database.DatabaseManager;
 import fr.fluffevent.fluffyteams.models.database.Member;
 import fr.fluffevent.fluffyteams.models.database.Spawn;
@@ -33,13 +35,8 @@ public class TeamController {
         return teams.get(0);
     }
 
-    public Member getMember(String teamName, Player player) {
-        Team team = getTeam(teamName);
-        if (team == null) {
-            throw new IllegalArgumentException("Team " + teamName + " not found");
-        }
-
-        List<Member> members = db.where("team_id = ? AND player_uuid = ?", team.id, player.getUniqueId())
+    public Member getMember(Player player) {
+        List<Member> members = db.where("player_uuid = ?", player.getUniqueId().toString())
                 .results(Member.class);
         if (members.isEmpty()) {
             return null;
@@ -53,7 +50,7 @@ public class TeamController {
             throw new IllegalArgumentException("Team " + teamName + " not found");
         }
 
-        List<Spawn> spawns = db.where("team_id = ?", team.id).results(Spawn.class);
+        List<Spawn> spawns = db.where("team_id = ? AND server = ?", team.id, Config.serverName).results(Spawn.class);
         if (spawns.isEmpty()) {
             return null;
         }
@@ -73,6 +70,9 @@ public class TeamController {
         if (team == null) {
             throw new IllegalArgumentException("Team " + teamName + " not found");
         }
+
+        listMembers(teamName).forEach(p -> removeMember(p.getPlayer()));
+
         db.delete(team);
     }
 
@@ -82,26 +82,37 @@ public class TeamController {
             throw new IllegalArgumentException("Team " + teamName + " not found");
         }
 
+        if (getMember(player) != null) {
+            throw new IllegalArgumentException("Player " + player.getName() + " is already in a team");
+        }
+
         Member member = new Member();
         member.teamId = team.id;
         member.playerUuid = player.getUniqueId().toString();
 
         db.insert(member);
+
+        Server server = Bukkit.getServer();
+        if (server.getPluginManager().isPluginEnabled("LuckPerms")) {
+            String lpCommand = "lp user " + player.getName() + " parent set " + team.name;
+            Bukkit.getServer().dispatchCommand(server.getConsoleSender(), lpCommand);
+        }
     }
 
-    public void removeMember(String teamName, Player player) {
-        Team team = getTeam(teamName);
-        if (team == null) {
-            throw new IllegalArgumentException("Team " + teamName + " not found");
-        }
-
-        Member member = getMember(teamName, player);
+    public void removeMember(Player player) {
+        Member member = getMember(player);
 
         if (member == null) {
-            throw new IllegalArgumentException("Player " + player.getName() + " not found in team " + teamName);
+            throw new IllegalArgumentException("Player " + player.getName() + " not found in any team ");
         }
 
         db.delete(member);
+
+        Server server = Bukkit.getServer();
+        if (server.getPluginManager().isPluginEnabled("LuckPerms")) {
+            String lpCommand = "lp user " + player.getName() + " parent clear";
+            Bukkit.getServer().dispatchCommand(server.getConsoleSender(), lpCommand);
+        }
     }
 
     public List<Team> list() {
@@ -156,6 +167,7 @@ public class TeamController {
             spawn.teamId = team.id;
         }
 
+        spawn.server = Config.serverName;
         spawn.world = location.getWorld().getName();
         spawn.x = location.getX();
         spawn.y = location.getY();

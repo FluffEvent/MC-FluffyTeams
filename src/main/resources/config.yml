@@ -2,3 +2,5 @@
 database-uri: "jdbc:mysql://localhost:3306/minecraft?useSSL=false&autoReconnect=true"
 database-username: "root"
 database-password: "password"
+
+server-name: "default"

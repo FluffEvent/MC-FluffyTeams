@@ -1,10 +1,8 @@
 
 # FluffyTeams
 
-A SpigotMC plugin boilerplate plugin
+This SpigotMC plugin is used to manage teams.
 
-## How to use
+Download the latest release, copy it to `plugins`, start the server, and change the Database/server name in `plugins/FluffyTeams/config.yml`.
 
-Create a new project from this template, search for "FluffyTeams" and replace it with the name of your plugin, make sure to also rename the files.
-
-There are some models example for DB/caching, also search in the codebase for "Change" and "Add", there will be comments of what needs to be changed.
+You can then use `/fluffyteams` or `/ft` to get the list of commands.
