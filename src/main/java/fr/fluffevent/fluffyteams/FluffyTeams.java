@@ -2,8 +2,11 @@ package fr.fluffevent.fluffyteams;
 
 import java.io.File;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
+
+import fr.fluffevent.fluffyteams.listeners.PlayerLoginListener;
 import fr.fluffevent.fluffyteams.database.DatabaseManager;
 import fr.fluffevent.fluffyteams.runnables.commands.FluffyTeamsCommand;
 
@@ -36,9 +39,8 @@ public class FluffyTeams extends JavaPlugin {
     DatabaseManager.connect();
 
     // Game listeners
-    // PluginManager pluginManager = this.getServer().getPluginManager();
-    // pluginManager.disablePlugin(this); // Remove this once your listeners are
-    // ready
+    PluginManager pluginManager = this.getServer().getPluginManager();
+    pluginManager.registerEvents(new PlayerLoginListener(), instance);
 
     // Commands
     this.getCommand("fluffyteams").setExecutor(new FluffyTeamsCommand());

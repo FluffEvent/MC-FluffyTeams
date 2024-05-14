@@ -5,7 +5,7 @@
 
 	<groupId>fr.fluffevent.fluffyteams</groupId>
 	<artifactId>FluffyTeams</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 
 	<repositories>
 		<repository>
@@ -69,6 +69,12 @@
 		   <artifactId>spigot-api</artifactId>
 		   <version>1.20.4-R0.1-SNAPSHOT</version>
 		   <scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.luckperms</groupId>
+			<artifactId>api</artifactId>
+			<version>5.4</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
