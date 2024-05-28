@@ -35,6 +35,22 @@ public class TeamController {
         return teams.get(0);
     }
 
+    public Team getTeamFromId(long id) {
+        List<Team> teams = db.where("id = ?", id).results(Team.class);
+        if (teams.isEmpty()) {
+            return null;
+        }
+        return teams.get(0);
+    }
+
+    public Team getMemberTeam(Player player) {
+        Member member = getMember(player);
+        if (member == null) {
+            return null;
+        }
+        return getTeamFromId(member.teamId);
+    }
+
     public Member getMember(Player player) {
         List<Member> members = db.where("player_uuid = ?", player.getUniqueId().toString())
                 .results(Member.class);
@@ -55,6 +71,16 @@ public class TeamController {
             return null;
         }
         return spawns.get(0);
+    }
+
+    public Location getSpawnLocation(String teamName) {
+        Spawn spawn = getSpawn(teamName);
+        if (spawn == null) {
+            return null;
+        }
+
+        World world = Bukkit.getWorld(spawn.world);
+        return new Location(world, spawn.x, spawn.y, spawn.z, spawn.yaw, spawn.pitch);
     }
 
     public void create(String name, String displayName) {
@@ -94,7 +120,7 @@ public class TeamController {
 
         Server server = Bukkit.getServer();
         if (server.getPluginManager().isPluginEnabled("LuckPerms")) {
-            String lpCommand = "lp user " + player.getName() + " parent set " + team.name;
+            String lpCommand = "lp user " + player.getName() + " parent add " + team.name;
             Bukkit.getServer().dispatchCommand(server.getConsoleSender(), lpCommand);
         }
     }
@@ -106,11 +132,13 @@ public class TeamController {
             throw new IllegalArgumentException("Player " + player.getName() + " not found in any team ");
         }
 
+        Team team = getTeamFromId(member.teamId);
+
         db.delete(member);
 
         Server server = Bukkit.getServer();
         if (server.getPluginManager().isPluginEnabled("LuckPerms")) {
-            String lpCommand = "lp user " + player.getName() + " parent clear";
+            String lpCommand = "lp user " + player.getName() + " parent remove " + team.name;
             Bukkit.getServer().dispatchCommand(server.getConsoleSender(), lpCommand);
         }
     }
@@ -132,18 +160,15 @@ public class TeamController {
             return;
         }
 
-        Spawn spawn = getSpawn(teamName);
+        Location spawnLocation = getSpawnLocation(teamName);
 
-        if (spawn == null) {
+        if (spawnLocation == null) {
             throw new IllegalArgumentException("No spawn set for team " + teamName);
         }
 
-        World world = Bukkit.getWorld(spawn.world);
-        Location location = new Location(world, spawn.x, spawn.y, spawn.z, spawn.yaw, spawn.pitch);
-
         listMembers(teamName).forEach(p -> {
             if (p.isOnline()) {
-                p.getPlayer().teleport(location);
+                p.getPlayer().teleport(spawnLocation);
             }
         });
     }
