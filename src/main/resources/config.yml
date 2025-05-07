@@ -4,3 +4,4 @@ database-username: "root"
 database-password: "password"
 
 server-name: "default"
+override-bed-respawn-location: false

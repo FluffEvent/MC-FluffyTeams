@@ -9,6 +9,7 @@ public class Config {
   public static String databaseUsername = "";
   public static String databasePassword = "";
   public static String serverName = "default";
+  public static boolean overrideBedRespawnLocation = false;
 
   public static void readConfig(JavaPlugin plugin) {
     plugin.saveDefaultConfig();
@@ -19,5 +20,6 @@ public class Config {
     databaseUsername = config.getString("database-username");
     databasePassword = config.getString("database-password");
     serverName = config.getString("server-name");
+    overrideBedRespawnLocation = config.getBoolean("override-bed-respawn-location", false);
   }
 }

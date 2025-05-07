@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
+import fr.fluffevent.fluffyteams.Config;
 import fr.fluffevent.fluffyteams.controllers.TeamController;
 import fr.fluffevent.fluffyteams.models.database.Team;
 
@@ -22,7 +23,7 @@ public class PlayerRespawnListener implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
 
-        if (player.getBedLocation() != null) {
+        if (player.getBedLocation() != null && !Config.overrideBedRespawnLocation) {
             return;
         }
 
