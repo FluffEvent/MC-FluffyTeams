@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -22,6 +23,7 @@ import com.google.gson.JsonObject;
 
 import fr.fluffevent.fluffyteams.Config;
 import fr.fluffevent.fluffyteams.database.DatabaseManager;
+import fr.fluffevent.fluffyteams.models.PlayerInfo;
 import fr.fluffevent.fluffyteams.models.database.Member;
 import fr.fluffevent.fluffyteams.models.database.Spawn;
 import fr.fluffevent.fluffyteams.models.database.Team;
@@ -162,14 +164,15 @@ public class TeamController {
         }
 
         // Get all members before deleting
-        List<OfflinePlayer> members = listMembers(teamName);
+        List<PlayerInfo> members = listMembers(teamName);
 
         // Remove all members
-        for (OfflinePlayer player : members) {
+        for (PlayerInfo playerInfo : members) {
+            OfflinePlayer player = playerInfo.getPlayer();
             if (player.isOnline()) {
                 removeMember(player.getPlayer());
             } else {
-                removeOfflineMember(player.getName());
+                removeOfflineMember(playerInfo.getUsername());
             }
         }
 
@@ -393,13 +396,72 @@ public class TeamController {
      * Lists all members of a team.
      *
      * @param teamName The name of the team
-     * @return A list of OfflinePlayer objects for all team members
+     * @return A list of PlayerInfo objects for all team members
      */
-    public List<OfflinePlayer> listMembers(String teamName) {
+    public List<PlayerInfo> listMembers(String teamName) {
         Team team = getTeam(teamName);
-        List<Member> members = db.where("team_id = ?", team.id).results(Member.class);
+        if (team == null) {
+            throw new IllegalArgumentException("Team " + teamName + " not found");
+        }
 
-        return members.stream().map(m -> Bukkit.getOfflinePlayer(UUID.fromString(m.playerUuid))).toList();
+        List<Member> members = db.where("team_id = ?", team.id).results(Member.class);
+        List<PlayerInfo> result = new ArrayList<>();
+
+        for (Member member : members) {
+            UUID uuid = UUID.fromString(member.playerUuid);
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+            String username = offlinePlayer.getName();
+            boolean hasConnectedBefore = offlinePlayer.hasPlayedBefore();
+
+            // If player has never connected, try to fetch username from Mojang API
+            if (username == null || username.isEmpty()) {
+                username = fetchUsernameFromMojang(uuid);
+            }
+
+            result.add(new PlayerInfo(offlinePlayer, username, uuid, hasConnectedBefore));
+        }
+
+        return result;
+    }
+
+    /**
+     * Fetch a player's username from Mojang API by UUID.
+     *
+     * @param uuid The UUID to look up
+     * @return The username if found, "Unknown Player" otherwise
+     */
+    private String fetchUsernameFromMojang(UUID uuid) {
+        try {
+            // Convert UUID to Mojang's format (no hyphens)
+            String uuidStr = uuid.toString().replace("-", "");
+            URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuidStr);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            int status = connection.getResponseCode();
+
+            if (status == 200) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+
+                // Parse the JSON response
+                JsonObject json = new Gson().fromJson(response.toString(), JsonObject.class);
+                return json.get("name").getAsString();
+            }
+
+            return "Unknown Player";
+        } catch (Exception e) {
+            Bukkit.getLogger().log(Level.WARNING, "Failed to fetch username for UUID: " + uuid, e);
+            return "Unknown Player";
+        }
     }
 
     /**
@@ -421,9 +483,9 @@ public class TeamController {
             throw new IllegalArgumentException("No spawn set for team " + teamName);
         }
 
-        listMembers(teamName).forEach(p -> {
-            if (p.isOnline()) {
-                p.getPlayer().teleport(spawnLocation);
+        listMembers(teamName).forEach(playerInfo -> {
+            if (playerInfo.getPlayer().isOnline()) {
+                playerInfo.getPlayer().getPlayer().teleport(spawnLocation);
             }
         });
     }

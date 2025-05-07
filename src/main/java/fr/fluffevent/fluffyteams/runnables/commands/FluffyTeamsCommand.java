@@ -342,7 +342,17 @@ public class FluffyTeamsCommand implements CommandExecutor, TabCompleter {
         teamController.list().forEach(t -> sender.sendMessage("§f- " + t.name + " §r§f(" + t.displayName + "§r§f)"));
       } else {
         sender.sendMessage("§eMembers of " + args[0] + ":");
-        teamController.listMembers(args[0]).forEach(p -> sender.sendMessage("§f- " + p.getName()));
+        teamController.listMembers(args[0]).forEach(playerInfo -> {
+          String displayName = playerInfo.getUsername();
+          String statusInfo = "";
+
+          // Add indicator for players who have never connected
+          if (!playerInfo.hasConnectedBefore()) {
+            statusInfo = " §7(never connected)";
+          }
+
+          sender.sendMessage("§f- " + displayName + statusInfo);
+        });
       }
     }
 
