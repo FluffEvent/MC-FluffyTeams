@@ -41,6 +41,13 @@ public class Config {
   public static boolean overrideBedRespawnLocation = false;
 
   /**
+   * Whether to override the player's anchor respawn location with team spawn.
+   * If true, players will always respawn at their team spawn instead of their
+   * anchors.
+   */
+  public static boolean overrideAnchorRespawnLocation = false;
+
+  /**
    * Loads configuration values from config.yml.
    * Creates the default configuration file if it doesn't exist.
    *
@@ -56,5 +63,6 @@ public class Config {
     databasePassword = config.getString("database-password");
     serverName = config.getString("server-name");
     overrideBedRespawnLocation = config.getBoolean("override-bed-respawn-location", false);
+    overrideAnchorRespawnLocation = config.getBoolean("override-anchor-respawn-location", false);
   }
 }

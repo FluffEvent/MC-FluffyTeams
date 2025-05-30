@@ -23,7 +23,11 @@ public class PlayerRespawnListener implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
 
-        if (player.getBedLocation() != null && !Config.overrideBedRespawnLocation) {
+        if (event.isBedSpawn() && !Config.overrideBedRespawnLocation) {
+            return;
+        }
+
+        if (event.isAnchorSpawn() && !Config.overrideAnchorRespawnLocation) {
             return;
         }
 

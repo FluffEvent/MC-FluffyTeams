@@ -5,3 +5,4 @@ database-password: "password"
 
 server-name: "default"
 override-bed-respawn-location: false
+override-anchor-respawn-location: false

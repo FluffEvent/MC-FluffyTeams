@@ -352,6 +352,7 @@ public class TeamController {
         // If couldn't get UUID from Mojang, try with Bukkit's offline player (for
         // players who have connected before)
         if (playerUUID == null) {
+            @SuppressWarnings("deprecation")
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(username);
             if (offlinePlayer.hasPlayedBefore()) {
                 playerUUID = offlinePlayer.getUniqueId();
